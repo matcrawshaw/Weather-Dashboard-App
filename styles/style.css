@@ -1,0 +1,31 @@
+
+.weather-header {
+    background-color: rgba(38, 10, 194, 0.664);
+}
+
+#today{
+;
+    border: 1px solid black;
+}
+
+#search-button {
+justify-content: left;
+}
+
+#search-button {
+    background-color: rgb(62, 79, 230);
+    border-radius: 8px;
+    margin-top: -1rem;
+    padding-right: 8rem;
+    color: aliceblue;
+    
+}
+
+.card {
+    background-color: rgba(38, 10, 194, 0.664);
+    color: aliceblue;
+    margin-right: .5rem;
+   white-space: nowrap;
+   line-height: 1000px;
+}
+
