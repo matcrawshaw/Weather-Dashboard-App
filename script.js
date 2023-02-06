@@ -3,7 +3,8 @@ let searchButton = $("#search-button");
 let searchInput = $("#search-input");
 
 let city = "london"
-let coordinates = []
+let coordinates = [];
+let previousSearches = [];
 
 let currentCity = $("#currentCity");
 let currentTemp = $("#currentTemp");
@@ -20,12 +21,37 @@ let tomorrowTemp = $("#tomorrowTemp");
 let tomorrowWind = $("#tomorrowWind");
 let tomorrowHum = $("#tomorrowHum");
 
+let twoDayTemp = $("#twoDayTemp");
+let twoDayWind = $("#twoDayWind");
+let twoDayHum = $("#twoDayHum");
+
+let threeDayTemp = $("#threeDayTemp");
+let threeDayWind = $("#threeDayWind");
+let threeDayHum = $("#threeDayHum");
+
+let fourDayTemp = $("#fourDayTemp");
+let fourDayWind = $("#fourDayWind");
+let fourDayHum = $("#fourDayHum");
+
+let fiveDayTemp = $("#fiveDayTemp");
+let fiveDayWind = $("#fiveDayWind");
+let fiveDayHum = $("#fiveDayHum");
+
 let today = moment().format("DD/MM/YYYY")
 let tomorrow = moment().add(1,'days').format("DD/MM/YYYY")
 let twodaysahead = moment().add(2,'days').format("DD/MM/YYYY")
 let threedaysahead = moment().add(3,'days').format("DD/MM/YYYY")
 let fourdaysahead = moment().add(4,'days').format("DD/MM/YYYY")
 let fivedaysahead = moment().add(5,'days').format("DD/MM/YYYY");
+
+
+
+
+
+
+currHour = moment().hour();
+
+
 
 
 
@@ -43,6 +69,8 @@ function defaultUI () {
      method: "GET"
  }).then(function (response) {
      let locresults = response;
+
+
  
 
 
@@ -60,12 +88,10 @@ getWeather(lat, long)
 
 }
 
-
-
 function newSearch () {
-       console.log(city); 
-    city = searchInput.val().trim()
-
+   
+    city = searchInput.val().trim();
+    previousSearches.push(city)
   
 
     mapURl = "https://api.opencagedata.com/geocode/v1/json?key=e0eb644af1b9429aa38bfea473c0aaa4&q=" 
@@ -111,13 +137,7 @@ function getWeather(lat, lng) {
         let results = response;
         console.log(results);
 
-
-
-
-
         UpdatePage(results)
-     
-
 
      });
 
@@ -126,28 +146,134 @@ function getWeather(lat, lng) {
     
 
     function UpdatePage(obj) {
+        let setTomorrow 
 
-let tomorrowAvgTemp = 0
-let tomorrowAvgWind = 0
-let tomorrowAvgHum = 0
 
-for (let i = 0; i < 5; i++) {
-tomorrowAvgTemp += (obj.list[i].main.temp / 5);
-tomorrowAvgWind += (obj.list[i].wind.speed / 5)
-tomorrowAvgHum += (obj.list[i].main.humidity / 5);
-} 
-$(tomorrowTemp).text("Temp: " + (parseFloat(tomorrowAvgTemp).toFixed(2)) + "°");
-$(tomorrowWind).text("Wind: " + (parseFloat(tomorrowAvgWind).toFixed(2)) + " KPH");
-$(tomorrowHum).text("Humidity: " + (parseFloat(tomorrowAvgHum).toFixed(2)) + " %");
+        if (currHour < 3){
+            setTomorrow = 7; }
+        if (currHour >= 3 && currHour <= 6) {
+            setTomorrow = 6; }
+        if (currHour >= 6 && currHour <= 9) {
+            setTomorrow = 5; }
+        if (currHour >= 9 && currHour <= 12) {
+            setTomorrow = 4 } 
+        if (currHour  >= 12 && currHour <=15) {
+            setTomorrow = 3 }
+        if (currHour >= 15 && currHour <= 18) {
+            setTomorrow = 2 } 
+        if (currHour >= 21 && currHour <= 24) {
+            setTomorrow = 0 }
+                
+        
+     console.log(setTomorrow);
+
 
    $(currentCity).text(obj.city.name + "(" + today + ")");
    $(currentTemp).text("Temp: " + obj.list[0].main.temp + "°");
    $(currentWind).text("Wind: " + obj.list[0].wind.speed + " KPH");
    $(currentHum).text("Humidity: " + obj.list[0].main.humidity + "%");
 
+let tomorrowAvgTemp = 0;
+let tomorrowAvgWind = 0;
+let tomorrowAvgHum = 0 ;
+
+let twoTemps = [] ;
+let twoWinds = [];
+let twoHum =[];
+let twoAvgTemp = 0;
+let twoAvgWind = 0;
+let twoAvgHum = 0;
+
+let threeTemps =[] ;
+let threeWinds =[];
+let threeHums =[];
+let threeAvgTemp = 0;
+let threeAvgWind = 0;
+let threeAvgHum = 0;
+
+let fourTemps =[];
+let fourWinds =[];
+let fourHums =[];
+let fourAvgTemp = 0;
+let fourAvgWind = 0;
+let fourAvgHum = 0;
+
+let fiveTemps =[];
+let fiveWinds=[];
+let fiveHums =[];
+let fiveAvgTemp = 0;
+let fiveAvgWind = 0;
+let fiveAvgHum = 0;
+
+
+for (let i = 0; i < 8 ; i++) {
+tomorrowAvgTemp += (obj.list[i + setTomorrow ].main.temp / 8);
+tomorrowAvgWind += (obj.list[i+ setTomorrow ].wind.speed / 8)
+tomorrowAvgHum += (obj.list[i + setTomorrow ].main.humidity / 8);
+
+twoTemps.push((obj.list[i + 8 + setTomorrow].main.temp));
+twoWinds.push(obj.list[i+ 8 + setTomorrow].wind.speed )
+twoHum.push(obj.list[i + 8 + setTomorrow].main.humidity);
+
+twoAvgTemp += (twoTemps[i] / 8);
+twoAvgWind += (twoWinds[i] / 8);
+twoAvgHum += (twoHum[i] / 8);
+
+
+
+threeTemps.push((obj.list[i + 16 + setTomorrow].main.temp ));
+threeWinds.push( (obj.list[i+ 16 + setTomorrow].wind.speed ))
+threeHums.push( (obj.list[i + 16 + setTomorrow].main.humidity));
+
+threeAvgTemp += (threeTemps[i] / 8);
+threeAvgWind += (threeWinds[i] / 8);
+threeAvgHum += (threeHums[i] / 8);
+
+fourTemps.push( (obj.list[i + 24 + setTomorrow].main.temp));
+fourWinds.push( (obj.list[i+ 24 + setTomorrow].wind.speed));
+fourHums.push( (obj.list[i + 24 + setTomorrow].main.humidity));
+
+fourAvgTemp += (fourTemps[i] / 8);
+fourAvgWind += (fourWinds[i] / 8);
+fourAvgHum += (fourHums[i] / 8);
+
+/*
+fiveTemps.push((obj.list[i + 32 + setTomorrow].main.temp / 8));
+fiveWinds.push((obj.list[i+ 32 + setTomorrow].wind.speed / 8));
+fiveHums.push((obj.list[i + 32 + setTomorrow].main.humidity / 8));
+
+fiveAvgTemp += (fiveTemps[i] / 8);
+fiveAvgWind += (fiveWinds[i] / 8);
+fiveAvgHum += (fiveHums[i] / 8);
+*/
+} 
+
+
+$(tomorrowTemp).text("Temp: " + (parseFloat(tomorrowAvgTemp).toFixed(2)) + "°");
+$(tomorrowWind).text("Wind: " + (parseFloat(tomorrowAvgWind).toFixed(2)) + " KPH");
+$(tomorrowHum).text("Humidity: " + (parseFloat(tomorrowAvgHum).toFixed(2)) + " %");
+
+$(twoDayTemp).text("Temp: " + (parseFloat(twoAvgTemp).toFixed(2)) + "°");
+$(twoDayWind).text("Wind: " + (parseFloat(twoAvgWind).toFixed(2)) + " KPH");
+$(twoDayHum).text("Humidity: " + (parseFloat(twoAvgHum).toFixed(2)) + " %");
+
+$(threeDayTemp).text("Temp: " + (parseFloat(threeAvgTemp).toFixed(2)) + "°");
+$(threeDayWind).text("Wind: " + (parseFloat(threeAvgWind).toFixed(2)) + " KPH");
+$(threeDayHum).text("Humidity: " + (parseFloat(threeAvgHum).toFixed(2)) + " %");
+
+$(fourDayTemp).text("Temp: " + (parseFloat(fourAvgTemp).toFixed(2)) + "°");
+$(fourDayWind).text("Wind: " + (parseFloat(fourAvgWind).toFixed(2)) + " KPH");
+$(fourDayHum).text("Humidity: " + (parseFloat(fourAvgHum).toFixed(2)) + " %");
+
+
+$(fiveDayTemp).text("Temp: " + (parseFloat(obj.list[36].main.temp).toFixed(2)) + "°");
+$(fiveDayWind).text("Wind: " + (parseFloat(obj.list[36].wind.speed).toFixed(2)) + " KPH");
+$(fiveDayHum).text("Humidity: " + (parseFloat(obj.list[36].main.humidity).toFixed(2)) + " %");
 
 
     }
+
+
 
 
     // loc search
@@ -164,7 +290,7 @@ newSearch();
 
 
 
-
+console.log(previousSearches);
 
 
 });
