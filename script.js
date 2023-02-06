@@ -19,22 +19,27 @@ let threeDayTitle = $("#threeDaysAhead").text(moment().add(3,'days').format("DD/
 let fourDayTitle = $("#fourDaysAhead").text(moment().add(4,'days').format("DD/MM/YYYY"));
 let fiveDayTitle = $("#fiveDaysAhead").text(moment().add(5,'days').format("DD/MM/YYYY"));
 
+let tomorrowIcon = $("#tomorrowIcon");
 let tomorrowTemp = $("#tomorrowTemp");
 let tomorrowWind = $("#tomorrowWind");
 let tomorrowHum = $("#tomorrowHum");
 
+let twoDayIcon = $("#twoDayIcon");
 let twoDayTemp = $("#twoDayTemp");
 let twoDayWind = $("#twoDayWind");
 let twoDayHum = $("#twoDayHum");
 
+let threeDayIcon = $("#threeDayIcon");
 let threeDayTemp = $("#threeDayTemp");
 let threeDayWind = $("#threeDayWind");
 let threeDayHum = $("#threeDayHum");
 
+let fourDayIcon = $("#fourDayIcon");
 let fourDayTemp = $("#fourDayTemp");
 let fourDayWind = $("#fourDayWind");
 let fourDayHum = $("#fourDayHum");
 
+let fiveDayIcon = $("#fiveDayIcon");
 let fiveDayTemp = $("#fiveDayTemp");
 let fiveDayWind = $("#fiveDayWind");
 let fiveDayHum = $("#fiveDayHum");
@@ -88,6 +93,8 @@ newSearch ()
 
 currHour = moment().hour(); 
 historyButtons()
+
+
 
 
 
@@ -171,7 +178,7 @@ function getWeather(lat, lng) {   // uses coordinates to get weather info
     }).then(function (response) {
         let results = response;
 
-
+console.log(results);
         UpdatePage(results)
 
      });
@@ -179,6 +186,17 @@ function getWeather(lat, lng) {   // uses coordinates to get weather info
     }
 
     
+
+function getIcon(code) {  // pulls relevent PNG file dependent on forecast icon code 
+    
+    let iconURL = "http://openweathermap.org/img/wn/" + code + "@2x.png" 
+
+    
+
+ return iconURL;
+
+}
+
 
 function UpdatePage(obj) {    // updates the page with relevent info
         let setTomorrow    
@@ -200,9 +218,10 @@ function UpdatePage(obj) {    // updates the page with relevent info
             setTomorrow = 0 }
                 
 
-
+            console.log(getIcon(obj.list[0].weather[0].icon))
 
    $(currentCity).text(obj.city.name + "(" + today + ")");
+   $(currentIcon).attr("src", getIcon(obj.list[0].weather[0].icon));
    $(currentTemp).text("Temp: " + obj.list[0].main.temp + "°");
    $(currentWind).text("Wind: " + obj.list[0].wind.speed + " KPH");
    $(currentHum).text("Humidity: " + obj.list[0].main.humidity + "%");
@@ -238,9 +257,17 @@ let fiveHums =[];
 let fiveAvgTemp = 0;
 let fiveAvgWind = 0;
 let fiveAvgHum = 0;
+console.log(setTomorrow);
 
+$(tomorrowIcon).attr("src", getIcon((obj.list[0 + setTomorrow + 3].weather[0].icon)));
+$(twoDayIcon).attr("src", getIcon((obj.list[8 + setTomorrow + 3].weather[0].icon)));
+$(threeDayIcon).attr("src", getIcon((obj.list[16 + setTomorrow + 3].weather[0].icon)));
+$(fourDayIcon).attr("src", getIcon((obj.list[24 + setTomorrow + 3].weather[0].icon)));
+$(fiveDayIcon).attr("src", getIcon((obj.list[32 + setTomorrow + 3].weather[0].icon)));
 
 for (let i = 0; i < 8 ; i++) {    // loop to push data from weather array into daily arrays, to then calculate average from, day 5 being a single entry due to limitation within API 
+
+
 tomorrowAvgTemp += (obj.list[i + setTomorrow ].main.temp / 8);
 tomorrowAvgWind += (obj.list[i+ setTomorrow ].wind.speed / 8)
 tomorrowAvgHum += (obj.list[i + setTomorrow ].main.humidity / 8);
@@ -269,6 +296,16 @@ fourAvgTemp += (fourTemps[i] / 8);
 fourAvgWind += (fourWinds[i] / 8);
 fourAvgHum += (fourHums[i] / 8);
 
+fiveTemps.push( (obj.list[i + 24 + setTomorrow].main.temp));
+fiveWinds.push( (obj.list[i+ 24 + setTomorrow].wind.speed));
+fiveHums.push( (obj.list[i + 24 + setTomorrow].main.humidity));
+
+fiveAvgTemp += (fiveTemps[i] / 8);
+fiveAvgWind += (fiveWinds[i] / 8);
+fiveAvgHum += (fiveHums[i] / 8);
+
+
+
 } 
 /// updates the cards with new data on daily averages 
 
@@ -289,9 +326,9 @@ $(fourDayWind).text("Wind: " + (parseFloat(fourAvgWind).toFixed(2)) + " KPH");
 $(fourDayHum).text("Humidity: " + (parseFloat(fourAvgHum).toFixed(2)) + " %");
 
 
-$(fiveDayTemp).text("Temp: " + (parseFloat(obj.list[36].main.temp).toFixed(2)) + "°");
-$(fiveDayWind).text("Wind: " + (parseFloat(obj.list[36].wind.speed).toFixed(2)) + " KPH");
-$(fiveDayHum).text("Humidity: " + (parseFloat(obj.list[36].main.humidity).toFixed(2)) + " %");
+$(fiveDayTemp).text("Temp: " + (parseFloat(obj.list[32].main.temp).toFixed(2)) + "°");
+$(fiveDayWind).text("Wind: " + (parseFloat(obj.list[32].wind.speed).toFixed(2)) + " KPH");
+$(fiveDayHum).text("Humidity: " + (parseFloat(obj.list[32].main.humidity).toFixed(2)) + " %");
 
     }
 

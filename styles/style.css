@@ -1,10 +1,10 @@
 
 .weather-header {
-    background-color: rgba(38, 10, 194, 0.664);
+background: linear-gradient(rgb(77, 130, 221) 0%, rgba(38, 10, 194, 0.664) 100%);
 }
 
 #today{
-;
+
     border: 1px solid black;
 }
 
@@ -26,6 +26,26 @@ justify-content: left;
     color: aliceblue;
     margin-right: .5rem;
    white-space: nowrap;
-   line-height: 1000px;
+ 
 }
 
+
+.todayBlock {
+    background-color: rgba(38, 10, 194, 0.664);
+}
+
+#currentCity {
+    display: inline;
+}
+
+
+.searchHistory {
+    margin-top: 5px;
+    border-radius: 10px;
+    background-color: rgba(38, 10, 194, 0.664);
+    color: aliceblue
+}
+
+.searchHistory:hover {
+    background-color: pink;
+}
