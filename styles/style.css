@@ -10,10 +10,16 @@ background: linear-gradient(rgb(77, 130, 221) 0%, rgba(38, 10, 194, 0.664) 100%)
 
 #search-button {
 justify-content: left;
+width: 100%;
+text-align: left;
+}
+
+.weather-search {
+    width: 100%;
 }
 
 #search-button {
-    background-color: rgb(62, 79, 230);
+    background-color: rgb(77, 130, 221);
     border-radius: 8px;
     margin-top: -1rem;
     padding-right: 8rem;
@@ -47,5 +53,5 @@ justify-content: left;
 }
 
 .searchHistory:hover {
-    background-color: pink;
+    background-color: rgb(216, 125, 145);
 }

@@ -113,8 +113,8 @@ function defaultUI () {   //loads up default city
  $.ajax({
      url: mapURl,
      method: "GET"
- }).then(function (response) {
-     let locresults = response;
+ }).then(function (res) {
+     let locresults = res;
 
 
  
@@ -127,6 +127,7 @@ function defaultUI () {   //loads up default city
 
 
 getWeather(lat, long)
+getCurrentWeather(lat, long)
    
 })
 
@@ -154,14 +155,43 @@ function newSearch () {    // gets coordinates from entered city name
 
 
 getWeather(lat, long)
-      
+getCurrentWeather(lat, long)
 })
 
 
 
 }
 
+function getCurrentWeather(lat, lng) {
+    let currURL = "https://api.openweathermap.org/data/2.5/weather?lat=" 
+    + lat + "&lon=" + lng + "&appid=92d34bb00ccad506b8b2254447f3b90f&units=metric";
+    
 
+    
+    
+    $.ajax({
+        url: currURL,
+        method: "GET"
+    }).then(function (re) {
+        let results = re;
+
+        updateCurrent(results)
+
+     });
+
+}
+
+
+function updateCurrent(obj) {
+
+    
+    $(currentCity).text(obj.name + "(" + today + ")");
+    $(currentIcon).attr("src", getIcon(obj.weather[0].icon));
+    $(currentTemp).text("Temp: " + obj.main.temp + "°");
+    $(currentWind).text("Wind: " + obj.wind.speed + " KPH");
+    $(currentHum).text("Humidity: " + obj.main.humidity + "%");
+ 
+}
 
 function getWeather(lat, lng) {   // uses coordinates to get weather info 
 
@@ -175,11 +205,10 @@ function getWeather(lat, lng) {   // uses coordinates to get weather info
     $.ajax({
         url: queryURL,
         method: "GET"
-    }).then(function (response) {
-        let results = response;
+    }).then(function (re) {
+        let results = re;
 
-console.log(results);
-        UpdatePage(results)
+        UpdateForecast(results)
 
      });
 
@@ -198,33 +227,31 @@ function getIcon(code) {  // pulls relevent PNG file dependent on forecast icon 
 }
 
 
-function UpdatePage(obj) {    // updates the page with relevent info
-        let setTomorrow    
+function UpdateForecast(obj) {    // updates the page with relevent info
+        let setTomorrow  
         
 
         if (currHour < 3){
             setTomorrow = 7; }
-        if (currHour >= 3 && currHour <= 6) {  // tells the upcoming for loop where each day starts in order to get the daily average. 
-            setTomorrow = 6; }
-        if (currHour >= 6 && currHour <= 9) {
-            setTomorrow = 5; }
-        if (currHour >= 9 && currHour <= 12) {
+        if (currHour >= 3 && currHour <  6) {  // tells the upcoming for loop where each day starts in order to get the daily average. 
+            setTomorrow = 6 }
+        if (currHour >= 6 && currHour  < 9) {
+            setTomorrow = 5 }
+        if (currHour >= 9 && currHour < 12) {
             setTomorrow = 4 } 
-        if (currHour  >= 12 && currHour <=15) {
+        if (currHour  >= 12 && currHour <15) {
             setTomorrow = 3 }
-        if (currHour >= 15 && currHour <= 18) {
+        if (currHour >= 15 && currHour < 18) {
             setTomorrow = 2 } 
-        if (currHour >= 21 && currHour <= 24) {
+        if (currHour >= 18 && currHour < 21) {
+            setTomorrow = 1 } 
+        if (currHour >= 21 && currHour < 24) {
             setTomorrow = 0 }
                 
 
-            console.log(getIcon(obj.list[0].weather[0].icon))
+            
 
-   $(currentCity).text(obj.city.name + "(" + today + ")");
-   $(currentIcon).attr("src", getIcon(obj.list[0].weather[0].icon));
-   $(currentTemp).text("Temp: " + obj.list[0].main.temp + "°");
-   $(currentWind).text("Wind: " + obj.list[0].wind.speed + " KPH");
-   $(currentHum).text("Humidity: " + obj.list[0].main.humidity + "%");
+            
 
 let tomorrowAvgTemp = 0;
 let tomorrowAvgWind = 0;
@@ -257,7 +284,8 @@ let fiveHums =[];
 let fiveAvgTemp = 0;
 let fiveAvgWind = 0;
 let fiveAvgHum = 0;
-console.log(setTomorrow);
+
+
 
 $(tomorrowIcon).attr("src", getIcon((obj.list[0 + setTomorrow + 3].weather[0].icon)));
 $(twoDayIcon).attr("src", getIcon((obj.list[8 + setTomorrow + 3].weather[0].icon)));
@@ -268,9 +296,9 @@ $(fiveDayIcon).attr("src", getIcon((obj.list[32 + setTomorrow + 3].weather[0].ic
 for (let i = 0; i < 8 ; i++) {    // loop to push data from weather array into daily arrays, to then calculate average from, day 5 being a single entry due to limitation within API 
 
 
-tomorrowAvgTemp += (obj.list[i + setTomorrow ].main.temp / 8);
-tomorrowAvgWind += (obj.list[i+ setTomorrow ].wind.speed / 8)
-tomorrowAvgHum += (obj.list[i + setTomorrow ].main.humidity / 8);
+tomorrowAvgTemp += (obj.list[i + setTomorrow].main.temp / 8);
+tomorrowAvgWind += (obj.list[i+ setTomorrow].wind.speed / 8)
+tomorrowAvgHum += (obj.list[i + setTomorrow].main.humidity / 8);
 
 twoTemps.push((obj.list[i + 8 + setTomorrow].main.temp));
 twoWinds.push(obj.list[i+ 8 + setTomorrow].wind.speed )
@@ -331,6 +359,17 @@ $(fiveDayWind).text("Wind: " + (parseFloat(obj.list[32].wind.speed).toFixed(2)) 
 $(fiveDayHum).text("Humidity: " + (parseFloat(obj.list[32].main.humidity).toFixed(2)) + " %");
 
     }
+
+
+
+
+
+
+
+
+
+
+
 
 
 defaultUI () ;  // loads up initial search of London 
