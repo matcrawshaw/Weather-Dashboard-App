@@ -2,6 +2,8 @@
 let searchButton = $("#search-button");
 let searchInput = $("#search-input");
 
+let historyButtonsCont = $("#history");
+
 let city = "london"
 let coordinates = [];
 let previousSearches = [];
@@ -44,19 +46,56 @@ let threedaysahead = moment().add(3,'days').format("DD/MM/YYYY")
 let fourdaysahead = moment().add(4,'days').format("DD/MM/YYYY")
 let fivedaysahead = moment().add(5,'days').format("DD/MM/YYYY");
 
+storedSearches = JSON.parse(localStorage.getItem("searches"));  //gets previous searches from local storage and adds them to array 
+if (storedSearches !== null) {
+    previousSearches = previousSearches.concat(storedSearches)
+}
+
+function historyButtons() {
+    historyButtonsCont.empty();
+
+
+
+previousSearches.forEach(function(city){
+
+let btn = $("<button>").text(city);
+btn.attr("city", (city));
+btn.addClass("searchHistory")
+historyButtonsCont.append(btn);
+
+
+
+
+}
+)
+
+
+$("#history").on("click", ".searchHistory", function (event) {
+    event.preventDefault();
+    const search = $(event.target);
+    const searchCity = search.attr("city");
+   
+city = searchCity;
+newSearch ()
+});
+
+
+
+
+}
+
+
+
+currHour = moment().hour(); 
+historyButtons()
 
 
 
 
 
-currHour = moment().hour();
 
-
-
-
-
-function defaultUI () {
- 
+function defaultUI () {   //loads up default city 
+    
  city = "london";
 
 
@@ -88,10 +127,7 @@ getWeather(lat, long)
 
 }
 
-function newSearch () {
-   
-    city = searchInput.val().trim();
-    previousSearches.push(city)
+function newSearch () {    // gets coordinates from entered city name 
   
 
     mapURl = "https://api.opencagedata.com/geocode/v1/json?key=e0eb644af1b9429aa38bfea473c0aaa4&q=" 
@@ -103,7 +139,6 @@ function newSearch () {
     }).then(function (response) {
         let locresults = response;
     
-
 
     let lat = locresults.results[0].geometry.lat
     let long = locresults.results[0].geometry.lng
@@ -121,13 +156,13 @@ getWeather(lat, long)
 
 
 
-function getWeather(lat, lng) {
+function getWeather(lat, lng) {   // uses coordinates to get weather info 
 
 
     let queryURL = "https://api.openweathermap.org/data/2.5/forecast?lat=" 
     + lat + "&lon=" + lng + "&appid=92d34bb00ccad506b8b2254447f3b90f&units=metric";
     
-    console.log(queryURL);
+
     
     
     $.ajax({
@@ -135,7 +170,7 @@ function getWeather(lat, lng) {
         method: "GET"
     }).then(function (response) {
         let results = response;
-        console.log(results);
+
 
         UpdatePage(results)
 
@@ -145,13 +180,13 @@ function getWeather(lat, lng) {
 
     
 
-    function UpdatePage(obj) {
-        let setTomorrow 
-
+function UpdatePage(obj) {    // updates the page with relevent info
+        let setTomorrow    
+        
 
         if (currHour < 3){
             setTomorrow = 7; }
-        if (currHour >= 3 && currHour <= 6) {
+        if (currHour >= 3 && currHour <= 6) {  // tells the upcoming for loop where each day starts in order to get the daily average. 
             setTomorrow = 6; }
         if (currHour >= 6 && currHour <= 9) {
             setTomorrow = 5; }
@@ -164,8 +199,7 @@ function getWeather(lat, lng) {
         if (currHour >= 21 && currHour <= 24) {
             setTomorrow = 0 }
                 
-        
-     console.log(setTomorrow);
+
 
 
    $(currentCity).text(obj.city.name + "(" + today + ")");
@@ -206,7 +240,7 @@ let fiveAvgWind = 0;
 let fiveAvgHum = 0;
 
 
-for (let i = 0; i < 8 ; i++) {
+for (let i = 0; i < 8 ; i++) {    // loop to push data from weather array into daily arrays, to then calculate average from, day 5 being a single entry due to limitation within API 
 tomorrowAvgTemp += (obj.list[i + setTomorrow ].main.temp / 8);
 tomorrowAvgWind += (obj.list[i+ setTomorrow ].wind.speed / 8)
 tomorrowAvgHum += (obj.list[i + setTomorrow ].main.humidity / 8);
@@ -218,8 +252,6 @@ twoHum.push(obj.list[i + 8 + setTomorrow].main.humidity);
 twoAvgTemp += (twoTemps[i] / 8);
 twoAvgWind += (twoWinds[i] / 8);
 twoAvgHum += (twoHum[i] / 8);
-
-
 
 threeTemps.push((obj.list[i + 16 + setTomorrow].main.temp ));
 threeWinds.push( (obj.list[i+ 16 + setTomorrow].wind.speed ))
@@ -237,17 +269,8 @@ fourAvgTemp += (fourTemps[i] / 8);
 fourAvgWind += (fourWinds[i] / 8);
 fourAvgHum += (fourHums[i] / 8);
 
-/*
-fiveTemps.push((obj.list[i + 32 + setTomorrow].main.temp / 8));
-fiveWinds.push((obj.list[i+ 32 + setTomorrow].wind.speed / 8));
-fiveHums.push((obj.list[i + 32 + setTomorrow].main.humidity / 8));
-
-fiveAvgTemp += (fiveTemps[i] / 8);
-fiveAvgWind += (fiveWinds[i] / 8);
-fiveAvgHum += (fiveHums[i] / 8);
-*/
 } 
-
+/// updates the cards with new data on daily averages 
 
 $(tomorrowTemp).text("Temp: " + (parseFloat(tomorrowAvgTemp).toFixed(2)) + "°");
 $(tomorrowWind).text("Wind: " + (parseFloat(tomorrowAvgWind).toFixed(2)) + " KPH");
@@ -270,60 +293,26 @@ $(fiveDayTemp).text("Temp: " + (parseFloat(obj.list[36].main.temp).toFixed(2)) +
 $(fiveDayWind).text("Wind: " + (parseFloat(obj.list[36].wind.speed).toFixed(2)) + " KPH");
 $(fiveDayHum).text("Humidity: " + (parseFloat(obj.list[36].main.humidity).toFixed(2)) + " %");
 
-
     }
 
 
+defaultUI () ;  // loads up initial search of London 
 
 
-    // loc search
-
-
-
-    defaultUI () 
 $(searchButton).click(function (e) { 
     e.preventDefault();
+    city = searchInput.val().trim();
+     previousSearches.push(city);
+     localStorage.setItem("searches", (JSON.stringify(previousSearches)));
 
+
+historyButtons()
 newSearch();
 
 
-
-
-
-console.log(previousSearches);
 
 
 });
 
 
 
- /*
-    <searchresults timestamp="Sat, 07 Nov 09 14:42:10 +0000" querystring="135 pilkington, avenue birmingham" polygon="true">
-    <place
-      place_id="1620612" osm_type="node" osm_id="452010817"
-      boundingbox="52.548641204834,52.5488433837891,-1.81612110137939,-1.81592094898224"
-      lat="52.5487429714954" lon="-1.81602098644987"
-      display_name="135, Pilkington Avenue, Wylde Green, City of Birmingham, West Midlands (county), B72, United Kingdom"
-      class="place" type="house">
-      <geokml>
-        <Polygon>
-          <outerBoundaryIs>
-            <LinearRing>
-              <coordinates>-1.816513,52.548756599999997 -1.816434,52.548747300000002 -1.816429,52.5487629 -1.8163717,52.548756099999999 -1.8163464,52.548834599999999 -1.8164599,52.548848100000001 -1.8164685,52.5488213 -1.8164913,52.548824000000003 -1.816513,52.548756599999997</coordinates>
-            </LinearRing>
-          </outerBoundaryIs>
-        </Polygon>
-      </geokml>
-      <house_number>135</house_number>
-      <road>Pilkington Avenue</road>
-      <village>Wylde Green</village>
-      <town>Sutton Coldfield</town>
-      <city>City of Birmingham</city>
-      <county>West Midlands (county)</county>
-      <postcode>B72</postcode>
-      <country>United Kingdom</country>
-      <country_code>gb</country_code>
-    </place>
-  </searchresults>
-
-  */
