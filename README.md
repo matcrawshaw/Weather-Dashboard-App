@@ -4,4 +4,7 @@ App using Open Weather API to show current weather and 5 day forecast for any ci
 
 https://matcrawshaw.github.io/Weather-Dashboard-App/
 ![Weather Dashboard - Screenshot1](https://user-images.githubusercontent.com/119896882/217853352-08b02d3c-31b0-4d8c-a73b-c339158abf0f.PNG)
-![Weather Dashboard - Screenshot](https://user-images.githubusercontent.com/119896882/217853375-8ca95084-0c6d-405a-9f26-7e90848ba536.PNG)
+
+
+
+![Weather Dashboard - Screenshot1](https://user-images.githubusercontent.com/119896882/217868301-e5adb311-2884-4d05-b9a1-a7d11fe4732e.PNG)
